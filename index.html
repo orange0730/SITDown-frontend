@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SITDown - 你的影片流</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 首頁 -->
+    <div id="homepage" class="page active">
+        <!-- 三欄式佈局 -->
+        <div class="homepage-layout">
+            <!-- 左側：標題區 -->
+            <div class="left-panel">
+                <h1 class="logo"><span class="sit-text">SIT</span>Down</h1>
+                <p class="subtitle">拖曳標籤餵貓咪<br>開始你的影片之旅</p>
+                <div class="start-section">
+                    <button class="start-btn" onclick="startWatching()">開始觀看</button>
+                    <p class="skip-text">或者直接開始隨機播放</p>
+                    <button class="clear-data-btn" id="clearDataBtn" onclick="clearImportedData()" style="display:none;">🗑️ 清除已匯入資料</button>
+                </div>
+            </div>
+            
+            <!-- 中間：貓咪容器 -->
+            <div class="center-panel">
+                <div class="cat-container" id="cat-container">
+                    <div class="cat-image-wrapper" id="cat">
+                        <img src="cat1_close.png" alt="貓咪" class="cat-img" id="cat-img">
+                    </div>
+                    <!-- 已選擇的標籤會顯示在這裡 -->
+                    <div class="selected-tags-area" id="selected-tags-area">
+                        <div class="selected-count" id="selected-count">餵了 0 個標籤</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右側：標籤區 -->
+            <div class="right-panel">
+                <div class="tags-section">
+                    <h3 class="tags-title">選擇標籤</h3>
+                    <div class="tags-playground" id="tags-playground"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 簡化的提示區域 -->
+        <div class="simple-hints">
+            <p>💡 拖曳標籤餵貓咪，或直接開始隨機播放</p>
+            <div class="manage-links">
+                <a href="import-csv.html" class="hint-link">📥 匯入CSV</a>
+                <a href="manage-videos.html" class="hint-link">⚙️ 管理影片庫</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 影片播放頁面 -->
+    <div id="video-page" class="page">
+        <!-- 橫式影片容器 -->
+        <div class="video-container">
+            <!-- 左側控制區 -->
+            <div class="left-controls">
+                <button class="home-btn" onclick="goHome()">🏠</button>
+                <div class="video-info-sidebar">
+                    <div class="video-tags" id="video-tags"></div>
+                </div>
+            </div>
+            
+            <!-- 中央影片區域（豎直） -->
+            <div class="video-display">
+                <iframe id="video-frame" 
+                        src="" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen
+                        referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <video id="video-player" 
+                       controls 
+                       autoplay 
+                       loop
+                       style="display:none; width:100%; height:100%; object-fit:contain; border-radius:20px;">
+                </video>
+                <div class="loading-indicator" id="loading-indicator">
+                    <div class="loading-spinner"></div>
+                    載入中...
+                </div>
+            </div>
+            
+            <!-- 右側控制區 -->
+            <div class="right-controls">
+                <div class="video-controls">
+                    <button class="control-btn prev-btn" onclick="previousVideo()">
+                        <span>⬆</span>
+                        <span>上一個</span>
+                    </button>
+                    <button class="control-btn next-btn" onclick="nextVideo()">
+                        <span>⬇</span>
+                        <span>下一個</span>
+                    </button>
+                </div>
+                
+                <!-- 播放資訊 -->
+                <div class="play-info">
+                    <div class="current-index" id="current-index">1 / 10</div>
+                    <div class="play-hint">使用上下鍵或滾輪切換</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 原有的主程式 -->
+    <script src="script.js"></script>
+    
+    <!-- GSAP 動畫庫 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script> 
+    <script src="gsap-enhancements-safe.js"></script> 
+    <!-- <script src="gsap-enhancements.js"></script> 暫時停用，有衝突 --> 
+    
+    <!-- 診斷工具（開發時使用） -->
+    <script src="inline-debug.js"></script>
+</body>
+</html> 
