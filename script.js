@@ -447,6 +447,22 @@ let filteredVideos = [];
 let isVideoPageActive = false;
 let isSwitching = false; // 防止快速切換
 
+// 貓咪音效相關變數
+let catSound = null;
+let currentCatImage = 'cat1_close.png';
+
+// 播放貓咪音效的函數
+function playCatSound() {
+    if (!catSound) {
+        catSound = new Audio('yt1s_XiDPt6n.mp3');
+        catSound.volume = 0.5;
+    }
+    catSound.currentTime = 0;
+    catSound.play().catch(e => {
+        console.log('音效播放失敗:', e);
+    });
+}
+
 // 獲取所有唯一標籤
 function getAllTags() {
     const allTags = [];
@@ -830,6 +846,12 @@ function unselectTag(tagName, tagElement) {
     
     // 更新計數
     updateSelectedCount();
+    
+    // 如果彈出框正在顯示，更新它
+    const popup = document.getElementById('selected-tags-popup');
+    if (popup && popup.classList.contains('show')) {
+        showSelectedTagsPopup();
+    }
 }
 
 
@@ -1597,10 +1619,68 @@ function initCatEvents() {
         return;
     }
     
+    // 創建已選擇標籤的顯示區域
+    let selectedTagsPopup = document.getElementById('selected-tags-popup');
+    if (!selectedTagsPopup) {
+        selectedTagsPopup = document.createElement('div');
+        selectedTagsPopup.id = 'selected-tags-popup';
+        selectedTagsPopup.className = 'selected-tags-popup';
+        catContainer.appendChild(selectedTagsPopup);
+    }
+    
+    // 用於追蹤延遲隱藏的計時器
+    let hidePopupTimer = null;
+    let isPopupHovered = false;
+    
+    // 滑鼠移入事件
+    catContainer.addEventListener('mouseenter', (e) => {
+        clearTimeout(hidePopupTimer);
+        if (currentCatImage !== 'cat2_open.png') {
+            catImg.src = 'cat2_open.png';  // 切換到張嘴圖片
+            currentCatImage = 'cat2_open.png';
+            playCatSound();
+        }
+        showSelectedTagsPopup();
+    });
+    
+    // 滑鼠移出事件
+    catContainer.addEventListener('mouseleave', (e) => {
+        if (currentCatImage !== 'cat1_close.png') {
+            catImg.src = 'cat1_close.png';  // 切換回閉嘴圖片
+            currentCatImage = 'cat1_close.png';
+            playCatSound();
+        }
+        
+        // 延遲隱藏彈出框
+        hidePopupTimer = setTimeout(() => {
+            if (!isPopupHovered) {
+                hideSelectedTagsPopup();
+            }
+        }, 800); // 延遲 800 毫秒
+    });
+    
+    // 為彈出框添加滑鼠事件
+    selectedTagsPopup.addEventListener('mouseenter', () => {
+        clearTimeout(hidePopupTimer);
+        isPopupHovered = true;
+    });
+    
+    selectedTagsPopup.addEventListener('mouseleave', () => {
+        isPopupHovered = false;
+        hidePopupTimer = setTimeout(() => {
+            hideSelectedTagsPopup();
+        }, 300); // 離開彈出框後較短的延遲
+    });
+    
+    // 拖曳相關事件
     catContainer.addEventListener('dragover', (e) => {
         e.preventDefault();
         cat.classList.add('drag-over');
-        catImg.src = 'cat2_open.png';  // 切換到張嘴圖片
+        if (currentCatImage !== 'cat2_open.png') {
+            catImg.src = 'cat2_open.png';  // 切換到張嘴圖片
+            currentCatImage = 'cat2_open.png';
+            playCatSound();
+        }
     });
     
     catContainer.addEventListener('dragleave', (e) => {
@@ -1611,16 +1691,67 @@ function initCatEvents() {
         
         if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
             cat.classList.remove('drag-over');
-            catImg.src = 'cat1_close.png';  // 切換回閉嘴圖片
+            if (!catContainer.matches(':hover')) {
+                if (currentCatImage !== 'cat1_close.png') {
+                    catImg.src = 'cat1_close.png';  // 切換回閉嘴圖片
+                    currentCatImage = 'cat1_close.png';
+                    playCatSound();
+                }
+            }
         }
     });
     
     catContainer.addEventListener('drop', (e) => {
         e.preventDefault();
         cat.classList.remove('drag-over');
-        catImg.src = 'cat1_close.png';  // 切換回閉嘴圖片
+        if (!catContainer.matches(':hover')) {
+            if (currentCatImage !== 'cat1_close.png') {
+                catImg.src = 'cat1_close.png';  // 切換回閉嘴圖片
+                currentCatImage = 'cat1_close.png';
+                playCatSound();
+            }
+        }
     });
 } 
+
+// 顯示已選擇的標籤彈出框
+function showSelectedTagsPopup() {
+    const popup = document.getElementById('selected-tags-popup');
+    if (!popup || selectedTags.length === 0) return;
+    
+    popup.innerHTML = '';
+    popup.style.display = 'flex';
+    
+    selectedTags.forEach(tag => {
+        const tagElement = document.createElement('div');
+        tagElement.className = 'popup-tag';
+        tagElement.textContent = tag;
+        tagElement.onclick = () => {
+            // 取消選擇該標籤
+            const originalTag = document.querySelector(`.draggable-tag[data-tag="${tag}"]`);
+            if (originalTag) {
+                unselectTag(tag, originalTag);
+            }
+        };
+        popup.appendChild(tagElement);
+    });
+    
+    // 添加動畫
+    setTimeout(() => {
+        popup.classList.add('show');
+    }, 10);
+}
+
+// 隱藏已選擇的標籤彈出框
+function hideSelectedTagsPopup() {
+    const popup = document.getElementById('selected-tags-popup');
+    if (!popup) return;
+    
+    popup.classList.remove('show');
+    setTimeout(() => {
+        popup.style.display = 'none';
+    }, 300);
+}
 
 // 檢查滑鼠/觸控是否在貓咪上方
 function checkCatHover(touch) {
@@ -1635,10 +1766,18 @@ function checkCatHover(touch) {
     if (clientX >= catRect.left && clientX <= catRect.right &&
         clientY >= catRect.top && clientY <= catRect.bottom) {
         cat.classList.add('drag-over');
-        catImg.src = 'cat2_open.png';  // 切換到張嘴圖片
+        if (currentCatImage !== 'cat2_open.png') {
+            catImg.src = 'cat2_open.png';  // 切換到張嘴圖片
+            currentCatImage = 'cat2_open.png';
+            playCatSound();
+        }
     } else {
         cat.classList.remove('drag-over');
-        catImg.src = 'cat1_close.png';  // 切換回閉嘴圖片
+        if (currentCatImage !== 'cat1_close.png') {
+            catImg.src = 'cat1_close.png';  // 切換回閉嘴圖片
+            currentCatImage = 'cat1_close.png';
+            playCatSound();
+        }
     }
 }
 
@@ -1659,7 +1798,11 @@ function removeCatHover() {
     const cat = document.getElementById('cat');
     const catImg = document.getElementById('cat-img');
     cat.classList.remove('drag-over');
-    catImg.src = 'cat1_close.png';  // 切換回閉嘴圖片
+    if (currentCatImage !== 'cat1_close.png') {
+        catImg.src = 'cat1_close.png';  // 切換回閉嘴圖片
+        currentCatImage = 'cat1_close.png';
+        playCatSound();
+    }
 }
 
 // 移動標籤到貓咪下方

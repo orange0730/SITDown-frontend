@@ -134,6 +134,57 @@ body {
     animation: fadeIn 0.3s ease;
 }
 
+/* 已選擇標籤彈出框 */
+.selected-tags-popup {
+    position: absolute;
+    right: -220px;
+    top: 50%;
+    transform: translateY(-50%) translateX(20px);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    min-width: 200px;
+    z-index: 110;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+}
+
+.selected-tags-popup.show {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+}
+
+.selected-tags-popup:hover {
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+}
+
+.popup-tag {
+    background: rgba(244, 164, 172, 0.8);
+    border: 1px solid #f4a4ac;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    color: #6b5b95;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.popup-tag:hover {
+    background: rgba(244, 164, 172, 0.95);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(244, 164, 172, 0.3);
+}
+
 /* 標籤區域 */
 .tags-section {
     height: 100%;
@@ -385,26 +436,7 @@ body {
     box-shadow: 0 8px 25px rgba(184, 169, 201, 0.35);
 }
 
-/* 清除資料按鈕樣式 */
-.clear-data-btn {
-    display: block;
-    margin: 15px auto 0;
-    padding: 10px 20px;
-    background: #f4a4ac;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(244, 164, 172, 0.25);
-}
 
-.clear-data-btn:hover {
-    background: #f8b5bd;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(244, 164, 172, 0.35);
-}
 
 .skip-text {
     margin-top: 20px;
