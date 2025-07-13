@@ -727,17 +727,24 @@ function addDragEvents(tagElement, tagName) {
         const touch = e.touches ? e.touches[0] : e;
         const rect = tagElement.getBoundingClientRect();
         
-        // 計算滑鼠在標籤內的偏移
+        // 記錄滑鼠在標籤內的偏移
         startX = touch.clientX - rect.left;
         startY = touch.clientY - rect.top;
         
-        // 記錄標籤當前位置
-        currentX = rect.left;
-        currentY = rect.top;
-        
         tagElement.classList.add('dragging');
         tagElement.style.transition = 'none';
-        tagElement.style.zIndex = '1000';
+        tagElement.style.zIndex = '999999';
+        tagElement.style.cursor = 'grabbing';
+        
+        // 設置初始的 fixed 位置
+        tagElement.style.left = rect.left + 'px';
+        tagElement.style.top = rect.top + 'px';
+        
+        // 允許標籤區域內容溢出
+        const tagsPlayground = document.getElementById('tags-playground');
+        if (tagsPlayground) {
+            tagsPlayground.classList.add('dragging-active');
+        }
         
         // 添加移動和結束事件監聽器
         if (e.type === 'touchstart') {
@@ -764,7 +771,7 @@ function addDragEvents(tagElement, tagName) {
         
         const touch = e.touches ? e.touches[0] : e;
         
-        // 計算新位置
+        // 使用 fixed 定位，直接使用視窗座標
         const newX = touch.clientX - startX;
         const newY = touch.clientY - startY;
         
@@ -792,10 +799,24 @@ function addDragEvents(tagElement, tagName) {
         // 檢查是否放在貓咪上
         if (isOverCat(touch)) {
             selectTag(tagName, draggedTag);
+        } else {
+            // 如果沒有放在貓咪上，恢復原始位置和定位方式
+            // position 會由 CSS 類自動恢復為 absolute
+            // 位置保持在拖曳結束的地方
+            const rect = draggedTag.getBoundingClientRect();
+            const container = draggedTag.parentElement.getBoundingClientRect();
+            draggedTag.style.left = (rect.left - container.left) + 'px';
+            draggedTag.style.top = (rect.top - container.top) + 'px';
         }
         
         draggedTag = null;
         removeCatHover();
+        
+        // 恢復標籤區域的 overflow 設定
+        const tagsPlayground = document.getElementById('tags-playground');
+        if (tagsPlayground) {
+            tagsPlayground.classList.remove('dragging-active');
+        }
         
         // 移除所有事件監聽器
         document.removeEventListener('mousemove', dragMove);

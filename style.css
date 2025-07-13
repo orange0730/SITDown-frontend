@@ -45,7 +45,10 @@ body {
     display: flex;
     height: 100vh;
     align-items: center;
-    padding: 0 40px;
+    padding: 40px;
+    gap: 40px;
+    position: relative;
+    z-index: 1; /* 基礎層級 */
 }
 
 /* 左側面板 */
@@ -73,6 +76,8 @@ body {
     justify-content: center;
     padding-left: 40px;
     height: 80vh;
+    position: relative;
+    z-index: 10; /* 設定較低的 z-index */
 }
 
 /* 貓咪容器 */
@@ -207,6 +212,11 @@ body {
     padding: 20px;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+/* 當有標籤正在拖曳時，允許內容溢出 */
+.tags-playground.dragging-active {
+    overflow: visible !important;
 }
 
 .tags-playground .draggable-tag {
@@ -351,9 +361,12 @@ body {
 .draggable-tag.dragging {
     cursor: grabbing;
     transform: rotate(3deg) scale(1.1);
-    z-index: 150;  /* 降低到合理的值，仍然在其他標籤之上，但不會覆蓋按鈕 */
+    z-index: 999999;  /* 使用極高的值確保在最上層 */
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
     touch-action: none; /* 防止觸控滾動 */
+    opacity: 1 !important; /* 確保拖曳時標籤保持可見 */
+    animation: none !important; /* 停止任何動畫 */
+    position: fixed !important; /* 脫離原本的定位流 */
 }
 
 .draggable-tag.selected {
