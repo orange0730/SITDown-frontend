@@ -605,6 +605,7 @@ body {
 .play-info {
     margin-top: 40px;
     text-align: center;
+    display: none; /* 隱藏整個播放資訊區域 */
 }
 
 .current-index {
@@ -612,13 +613,16 @@ body {
     font-size: 1.2rem;
     font-weight: bold;
     margin-bottom: 10px;
+    display: none; /* 隱藏編號顯示 */
 }
 
+/* 移除不再使用的 play-hint 樣式
 .play-hint {
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.9rem;
     line-height: 1.4;
 }
+*/
 
 .video-info-sidebar .video-tags {
     display: flex;
