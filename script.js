@@ -385,7 +385,7 @@ function getBackupVideoLibrary() {
             id: 3,
             title: "示範影片",
             url: "https://www.w3schools.com/html/mov_bbb.mp4",
-            tags: ["範例", "測試"],
+            tags: ["範例", "教學"],
             type: "direct"
         },
         {
@@ -466,9 +466,13 @@ function playCatSound() {
 // 獲取所有唯一標籤
 function getAllTags() {
     const allTags = [];
+    // 定義要排除的標籤
+    const excludedTags = ["測試", "上方直接複製", "分享", "右鍵"];
+    
     videoLibrary.forEach(video => {
         video.tags.forEach(tag => {
-            if (!allTags.includes(tag)) {
+            // 檢查是否為排除標籤，且尚未包含在結果中
+            if (!excludedTags.includes(tag) && !allTags.includes(tag)) {
                 allTags.push(tag);
             }
         });
@@ -1514,7 +1518,7 @@ window.testShortsConversion = function(url) {
             title: "測試 Shorts",
             url: embedUrl,
             originalUrl: url,
-            tags: ["測試"],
+            tags: ["範例"],
             type: "youtube",
             isShorts: url.includes('/shorts/')
         };
